@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Due Date Voting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .result {
+            font-size: 20px;
+            color: #007BFF;
+            margin-top: 20px;
+        }
+        .tally {
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>When is Physics Due?</h1>
+    <p>Click a button to vote. You can vote only once per device!</p>
+    <button id="mondayButton" onclick="setDueDate('Monday')">Monday</button>
+    <button id="tuesdayButton" onclick="setDueDate('Tuesday')">Tuesday</button>
+    <div class="result" id="result"></div>
+    <div class="tally" id="tally"></div>
+
+    <script>
+        // Initialize tallies if not already set
+        if (!localStorage.getItem('Monday')) localStorage.setItem('Monday', 0);
+        if (!localStorage.getItem('Tuesday')) localStorage.setItem('Tuesday', 0);
+
+        // Check if the user has already voted
+        const userVote = localStorage.getItem('userVote');
+
+        // Disable voting buttons if already voted
+        function checkUserVote() {
+            if (userVote) {
+                document.getElementById('mondayButton').disabled = true;
+                document.getElementById('tuesdayButton').disabled = true;
+                document.getElementById('result').innerText = `You already voted for Physics to be due on ${userVote}!`;
+            }
+        }
+
+        // Update the tally display
+        function updateTally() {
+            const mondayVotes = localStorage.getItem('Monday');
+            const tuesdayVotes = localStorage.getItem('Tuesday');
+            document.getElementById('tally').innerHTML = `
+                <p>Votes for Monday: ${mondayVotes}</p>
+                <p>Votes for Tuesday: ${tuesdayVotes}</p>
+            `;
+        }
+
+        // Set due date and save user vote
+        function setDueDate(day) {
+            if (!userVote) {
+                // Increment the tally for the chosen day
+                const currentVotes = parseInt(localStorage.getItem(day)) || 0;
+                localStorage.setItem(day, currentVotes + 1);
+
+                // Save the user's vote
+                localStorage.setItem('userVote', day);
+
+                // Display the chosen day
+                document.getElementById('result').innerText = `You voted for Physics to be due on ${day}!`;
+
+                // Disable buttons to prevent further voting
+                document.getElementById('mondayButton').disabled = true;
+                document.getElementById('tuesdayButton').disabled = true;
+
+                // Update the tally display
+                updateTally();
+            }
+        }
+
+        // Initial setup
+        updateTally();
+        checkUserVote();
+    </script>
+</body>
+</html>
